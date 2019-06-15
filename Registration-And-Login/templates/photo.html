@@ -1,3 +1,37 @@
 {% extends "layout.html"%}
 {% block body %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Room</title>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.8/socket.io.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    $(document).ready(function(){
+        var socket = io.connect('http://127.0.0.1:5000');
+        socket.on('connect', function(){
+            socket.send($('#name').val()+' has now connected!');
+        });
+
+        socket.on('message', function(msg){
+            $("#messageslist").append('<li>'+msg+'</li>');
+        });
+
+        $('#sendButton').on('click', function(){
+            socket.send($('#myMessage').val());
+            $('#myMessage').val('');
+        });
+
+    });
+</script>
+<ul id="clientlist"></ul>
+<ul id="messageslist"></ul>
+<input type="text" id="myMessage">
+<input type="text" id="name" value={{messages}} hidden>
+<button id="sendButton">Send</button>
+</body>
+</html>
 {% endblock %}
