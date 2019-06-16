@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, session, logging, url_for, re
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from passlib.hash import sha256_crypt
-from flask_socketio import SocketIO, send
+from flask_socketio import SocketIO, send, emit
 
 engine = create_engine("mysql+pymysql://root:root@localhost/register")
 db = scoped_session(sessionmaker(bind=engine))
@@ -59,11 +59,11 @@ def login():
                     user_name = usernamedata[0]
                     session["user_name"] = user_name
                     flash("You are now logged in", "success")
-                    message = username
+                    messages = username
                     #logged_in_users.add(user_name)
-                    logged_in_users.append(user_name)
+                    #logged_in_users.append(user_name)
                     print(logged_in_users)
-                    return redirect(url_for('photo', messages=message))
+                    return redirect(url_for('photo', messages=messages))
                 else:
                     flash("Incorrect password", "danger")
                     return render_template("login.html")
@@ -78,12 +78,14 @@ def photo():
 #logout
 @app.route("/logout")
 def logout():
+    print("logout funvtion")
     user_name = session.get("user_name")
     if user_name in logged_in_users:
         logged_in_users.remove(user_name)
     session.clear()
+    socketio.emit('online', logged_in_users)
     flash("You are now logged out !!", "success")
-    print(logged_in_users)
+    #print(logged_in_users)
     return redirect(url_for('login'))
 
 
@@ -95,7 +97,9 @@ def handle_message(msg):
 
 @socketio.on('connect')
 def handle_connect():
-    send(logged_in_users, broadcast=True)
+    user_name = session.get("user_name")
+    logged_in_users.append(user_name)
+    emit('online', logged_in_users, broadcast=True)
 
 
 if __name__ == "__main__":

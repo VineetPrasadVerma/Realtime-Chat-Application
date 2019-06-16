@@ -20,11 +20,15 @@
             $("#messageslist").append('<li>'+msg+'</li>');
         });
 
+        socket.on('online', function(usernamelist){
+             $("#clientlist").empty()
+             $("#clientlist").append('<li>'+usernamelist+'</li>');
+        });
+
         $('#sendButton').on('click', function(){
             socket.send($('#myMessage').val());
             $('#myMessage').val('');
         });
-
     });
 </script>
 <ul id="clientlist"></ul>
