@@ -3,15 +3,19 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from passlib.hash import sha256_crypt
 from flask_socketio import SocketIO, send, emit
+from aylienapiclient import textapi
+import emoji
 
 engine = create_engine("mysql+pymysql://root:root@localhost/register")
 db = scoped_session(sessionmaker(bind=engine))
 app = Flask('__name__')
 app.config['SECRET_KEY'] = 'mysecret'
 socketio = SocketIO(app)
+client = textapi.Client("c2e91675", "c7a5903ceb7a1958a6e59b9ad5bda019")
 
 # logged_in_users = set() # TODO: Make it work with set
 logged_in_users = []
+
 
 @app.route("/")
 def home():
@@ -91,8 +95,19 @@ def logout():
 
 @socketio.on('message')
 def handle_message(msg):
+    emoji_image = emoji.emojize(":neutral face:")
+    sentiment = client.Sentiment({'text': msg})
+    value_for_emoji = sentiment.get('polarity')
     print('Message: ' + msg)
-    send(msg, broadcast=True)
+    if value_for_emoji == 'positive':
+        emoji_image = emoji.emojize(":grinning_face_with_big_eyes:")
+    elif value_for_emoji == 'negative':
+        emoji_image = emoji.emojize(":frowning_face:")
+    elif value_for_emoji == 'neutral':
+        emoji_image = emoji.emojize(":neutral_face:")
+    else:
+        emoji_image = emoji.emojize(":neutral face:")
+    send(msg+" "+emoji_image, broadcast=True)
 
 
 @socketio.on('connect')
