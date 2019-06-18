@@ -15,8 +15,12 @@ emotion detected from the text.
 ----------------
 Here are steps to be followed for using the app :-
 1.Clone the App. (git clone https://github.com/VineetPrasadVerma/Realtime-Chat-Application.git)
+
 2.Create virtual environment. (py -m venv env)
+
 3.Install all the requirements. (pip install -r requirements.txt)
+
 4.You have to create database for running it. Database name is "register' and table name is "users".
+
 5.Run the app.py or you can use the command "py app.py" (be on the correct path to run the command successfully)
 
