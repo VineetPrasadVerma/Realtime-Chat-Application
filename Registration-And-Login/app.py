@@ -31,7 +31,11 @@ def register():
         confirm = request.form.get("confirm")
         secure_password = sha256_crypt.encrypt(str(password))
 
-        if password == confirm:
+        new_value = db.execute("SELECT username from users where username = :username", {"username": username}).fetchone()
+        if new_value is not None:
+            flash("Username already exist !!", "danger")
+            return redirect(url_for('login'))
+        elif password == confirm:
             db.execute("INSERT INTO USERS(name, username, password) VALUES(:name, :username, :password)",
                        {"name": name, "username": username, "password": secure_password})
             db.commit()
@@ -82,7 +86,7 @@ def photo():
 #logout
 @app.route("/logout")
 def logout():
-    print("logout funvtion")
+    #print("logout funvtion")
     user_name = session.get("user_name")
     if user_name in logged_in_users:
         logged_in_users.remove(user_name)
@@ -97,6 +101,7 @@ def logout():
 def handle_message(msg):
     emoji_image = emoji.emojize(":neutral face:")
     sentiment = client.Sentiment({'text': msg})
+    print(sentiment)
     value_for_emoji = sentiment.get('polarity')
     print('Message: ' + msg)
     if value_for_emoji == 'positive':
