@@ -1,1 +1,1 @@
-web: gunicorn RealtimeChatApplication:app
+web: python app.py
