@@ -22,6 +22,7 @@
 
         socket.on('online', function(usernamelist){
              $("#clientlist").empty()
+             $("#clientlist").append('<li>Below are the online users:- </li>');
              $("#clientlist").append('<li>'+usernamelist+'</li>');
         });
 
