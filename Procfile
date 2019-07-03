@@ -1,1 +1,1 @@
-web: python app.py
+web: python Registration-And-Login\app.py
